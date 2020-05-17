@@ -51,15 +51,6 @@
       (recur))
     (PriorityBuffer. queue rchan n)))
 
-(defprotocol PriorityChannel
-  (close! [this]))
-
-(extend-protocol PriorityChannel
-  ManyToManyChannel
-  (close! [this]
-    (close-buf! (.buf this))
-    (async/close! this)))
-
 (defn priority-chan [n idfn rchan]
   (chan (priority-buf n
                       (priority-comparate idfn)
