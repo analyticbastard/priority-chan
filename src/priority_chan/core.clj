@@ -6,10 +6,10 @@
            (java.util AbstractQueue Iterator)
            (java.util.concurrent PriorityBlockingQueue)))
 
-(defn priority-comparate [idfn]
+(defn priority-comparate [pfn]
  (fn [a b]
-   (> (idfn a)
-      (idfn b))))
+   (> (pfn a)
+      (pfn b))))
 
 (defn iteration-seq [iteration]
   (iterator-seq
@@ -51,9 +51,9 @@
         (recur)))
     (PriorityBuffer. queue rchan n)))
 
-(defn priority-chan [n idfn rtime rchan]
+(defn priority-chan [n pfn idfn rtime rchan]
   (chan (priority-buf n
-                      (priority-comparate idfn)
+                      (priority-comparate pfn)
                       idfn
                       rtime
                       rchan)))
