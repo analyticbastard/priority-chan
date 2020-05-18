@@ -1,14 +1,20 @@
 # priority-chan
 
-A Clojure library designed to ... well, that part is up to you.
+A Clojure async channel with priorities
 
 ## Usage
 
-FIXME
+```clojure
+(def rchan (chan))
+(def pc (priority-chan 10      ; initial buffer size
+                       :id     ; id function predicate
+                       100     ; buffer removal interval
+                       rchan)) ; removal channel
+```
 
 ## License
 
-Copyright © 2020 FIXME
+Copyright © 2020 Javier Arriero
 
 This program and the accompanying materials are made available under the
 terms of the Eclipse Public License 2.0 which is available at
