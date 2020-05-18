@@ -37,8 +37,9 @@
   (let [queue (PriorityBlockingQueue. (inc n) (comparator pfn))
         removals (atom #{})]
     (go-loop []
-      (swap! removals conj (idfn (<! rchan)))
-      (recur))
+      (when-let [x (<! rchan)]
+        (swap! removals conj (idfn x))
+        (recur)))
     (go-loop []
       (<! (async/timeout 500))
       (when-not (empty? @removals)
@@ -46,7 +47,8 @@
               to-remove (filter #(contains? @removals (idfn %)) elems)]
           (doseq [e to-remove]
             (.remove queue e))))
-      (recur))
+      (when-not (.closed? rchan)
+        (recur)))
     (PriorityBuffer. queue rchan n)))
 
 (defn priority-chan [n idfn rchan]
