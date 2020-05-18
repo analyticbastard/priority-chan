@@ -41,8 +41,6 @@
       (recur))
     (go-loop []
       (<! (async/timeout 500))
-      #_(when-not (empty? @removals)
-          (println "TOREMOVE2" (count @removals)))
       (when-not (empty? @removals)
         (let [elems (iteration-seq (.iterator queue))
               to-remove (filter #(contains? @removals (idfn %)) elems)]
