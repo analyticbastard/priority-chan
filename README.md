@@ -1,15 +1,48 @@
 # priority-chan
 
-A Clojure async channel with priorities
+A Clojure async channel with priorities and element removal
+
+Elements can asynchronously be removed while stored
+in the channel buffer.
+
 
 ## Usage
 
+Create the channel
+
 ```clojure
 (def rchan (chan))
-(def pc (priority-chan 10      ; initial buffer size
-                       :id     ; id function predicate
-                       100     ; buffer removal interval
-                       rchan)) ; removal channel
+(def pc (priority-chan 10        ; initial buffer size
+                       :priority ; priority function predicate
+                       :id       ; id function predicate
+                       100       ; buffer removal interval
+                       rchan))   ; removal channel
+```
+
+Add elements
+
+```clojure
+(>!! pc {:id 1 :priority 2})
+(>!! pc {:id 2 :priority 4})
+(>!! pc {:id 3 :priority 3})
+(>!! pc {:id 4 :priority 1})
+```
+
+Delete elements
+
+```clojure
+(>!! rchan 2)
+```
+
+Read remaining elements in the specified piority order
+
+```clojure
+(<!! pc)
+=> {:id 3, :priority 3}
+(<!! pc)
+=> {:id 1, :priority 2}
+(<!! pc)
+=> {:id 4, :priority 1}
 ```
 
 ## License
