@@ -37,8 +37,8 @@
   (let [queue (PriorityBlockingQueue. (inc n) (comparator pfn))
         removals (atom #{})]
     (go-loop []
-      (when-let [x (<! rchan)]
-        (swap! removals conj (idfn x))
+      (when-let [id (<! rchan)]
+        (swap! removals conj id)
         (recur)))
     (go-loop []
       (<! (async/timeout rtime))
