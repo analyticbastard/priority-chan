@@ -33,7 +33,7 @@
   (count [this]
     (.size buf)))
 
-(defn priority-buf [n pfn idfn rchan]
+(defn priority-buf [n pfn idfn rtime rchan]
   (let [queue (PriorityBlockingQueue. (inc n) (comparator pfn))
         removals (atom #{})]
     (go-loop []
@@ -41,7 +41,7 @@
         (swap! removals conj (idfn x))
         (recur)))
     (go-loop []
-      (<! (async/timeout 500))
+      (<! (async/timeout rtime))
       (when-not (empty? @removals)
         (let [elems (iteration-seq (.iterator queue))
               to-remove (filter #(contains? @removals (idfn %)) elems)]
@@ -51,8 +51,9 @@
         (recur)))
     (PriorityBuffer. queue rchan n)))
 
-(defn priority-chan [n idfn rchan]
+(defn priority-chan [n idfn rtime rchan]
   (chan (priority-buf n
                       (priority-comparate idfn)
                       idfn
+                      rtime
                       rchan)))
